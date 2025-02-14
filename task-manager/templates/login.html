@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card p-5 shadow-lg rounded">
+            <h1 class="text-center mb-4 text-light">Welcome Back, User!</h1>
+            <p class="text-center mb-4 text-light">Sign in to continue.</p>
+
+            <form id="signin-form" method="POST" class="needs-validation" novalidate>
+                {{ form.hidden_tag() }}
+                <div class="mb-3">
+                    <label class="form-label text-light">Email</label>
+                    {{ form.email(class="form-control", placeholder="Enter your email") }}
+                    {% for error in form.email.errors %}
+                        <div class="invalid-feedback d-block">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-3 position-relative">
+                    <label class="form-label text-light">Password</label>
+                    <div class="input-group">
+                        {{ form.password(class="form-control", placeholder="Enter your password") }}
+                        <button class="btn btn-outline-light" type="button" onclick="togglePassword('password', 'toggleIcon')">
+                            <i class="bi bi-eye-slash" id="toggleIcon"></i>
+                        </button>
+                    </div>
+                    {% for error in form.password.errors %}
+                        <div class="invalid-feedback d-block">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="form-check mb-3">
+                    {{ form.remember(class="form-check-input") }}
+                    {{ form.remember.label(class="form-check-label text-light") }}
+                </div>
+
+                {{ form.submit(class="btn btn-primary w-100") }}
+                
+                <div class="text-center mt-3">
+                    <a href="{{ url_for('forgot_password') }}" class="text-warning">Forgot Password?</a>
+                </div>
+                
+                <p class="text-center mt-3 text-light">
+                    Don't have an account? <a href="{{ url_for('register') }}" class="text-warning fw-bold">Sign Up</a>
+                </p>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function togglePassword(inputId, iconId) {
+    const passwordField = document.getElementById(inputId);
+    const toggleIcon = document.getElementById(iconId);
+
+    if (passwordField.type === "password") {
+        passwordField.type = "text";
+        toggleIcon.classList.remove("bi-eye-slash");
+        toggleIcon.classList.add("bi-eye");
+    } else {
+        passwordField.type = "password";
+        toggleIcon.classList.remove("bi-eye");
+        toggleIcon.classList.add("bi-eye-slash");
+    }
+}
+</script>
+{% endblock %}
+
