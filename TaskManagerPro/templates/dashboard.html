@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <nav id="sidebarMenu" class="col-md-3 col-lg-2 sidebar collapse show">
+            <div class="position-sticky pt-3">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="{{ url_for('dashboard') }}">
+                            <i class="fas fa-home me-2"></i>Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="fas fa-calendar me-2"></i>Upcoming Tasks
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="filterTasks('', 'completed')">
+                            <i class="fas fa-check-circle me-2"></i>Completed Tasks
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="fas fa-filter me-2"></i>Filters
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="fas fa-tags me-2"></i>Labels
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <main id="mainContent" class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div
+                class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Dashboard</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search tasks..." id="searchInput">
+                        <button class="btn btn-outline-secondary" type="button" id="searchButton">Search</button>
+                    </div>
+                </div>
+                <button id="toggleSidebar" class="btn btn-outline-primary mb-3">
+                    <i class="fas fa-bars"></i> Menu
+                </button>
+                
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title text-dark">Add New Task</h5>
+                            <form action="{{ url_for('add_task') }}" method="POST">
+                                <div class="mb-3">
+                                    <label for="title" class="form-label text-dark">Title</label>
+                                    <input type="text" class="form-control" id="title" name="title" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="description" class="form-label text-dark">Description</label>
+                                    <textarea class="form-control" id="description" name="description"
+                                        rows="3"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="priority" class="form-label text-dark">Priority</label>
+                                    <select class="form-control" id="priority" name="priority">
+                                        <option value="1">Low</option>
+                                        <option value="2">Medium</option>
+                                        <option value="3">High</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="due_date" class="form-label text-dark">Due Date</label>
+                                    <input type="date" class="form-control" id="due_date" name="due_date">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Add Task</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title text-dark">Filter Tasks</h5>
+                            <form id="filterForm">
+                                <div class="mb-3">
+                                    <label for="filter" class="form-label text-dark">Filter by:</label>
+                                    <select class="form-control" id="filter" name="filter">
+                                        <option value="">All Tasks</option>
+                                        <option value="priority_high">High Priority</option>
+                                        <option value="priority_medium">Medium Priority</option>
+                                        <option value="priority_low">Low Priority</option>
+                                        <option value="incomplete">Incomplete Tasks</option>
+                                        <option value="completed">Completed Tasks</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Apply Filter</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2>Your Tasks</h2>
+            <div class="row" id="taskContainer">
+                {% for task in tasks %}
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title text-dark">{{ task.title }}</h5>
+                            <p class="card-text text-dark">{{ task.description }}</p>
+                            <p class="card-text text-dark">
+                                <small>
+                                    Priority:
+                                    {% if task.priority == 1 %}
+                                    <span class="badge bg-success">Low</span>
+                                    {% elif task.priority == 2 %}
+                                    <span class="badge bg-warning">Medium</span>
+                                    {% else %}
+                                    <span class="badge bg-danger">High</span>
+                                    {% endif %}
+                                </small>
+                            </p>
+                            <p class="card-text text-dark">
+                                <small>Due Date: {{ task.due_date.strftime('%Y-%m-%d') if task.due_date else 'Not set'
+                                    }}</small>
+                            </p>
+                            <p class="card-text text-dark">
+                                <small>Status: {{ 'Completed' if task.completed else 'Incomplete' }}</small>
+                            </p>
+                            <div class="mt-3">
+                                {% if not task.completed %}
+                                    <a href="{{ url_for('update_task', task_id=task.id) }}" class="btn btn-primary btn-sm">Update</a>
+                                {% endif %}
+                                <a href="{{ url_for('delete_task', task_id=task.id) }}" class="btn btn-danger btn-sm">Delete</a>
+                                {% if not task.completed %}
+                                    <a href="{{ url_for('complete_task', task_id=task.id) }}" class="btn btn-success btn-sm">Mark Complete</a>
+                                {% endif %}
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('searchInput');
+        const searchButton = document.getElementById('searchButton');
+        const filterForm = document.getElementById('filterForm');
+        const taskContainer = document.getElementById('taskContainer');
+
+        searchButton.addEventListener('click', function () {
+            const searchQuery = searchInput.value;
+            filterTasks(searchQuery, '');
+        });
+
+        filterForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const filterValue = document.getElementById('filter').value;
+            filterTasks('', filterValue);
+        });
+
+        function filterTasks(search, filter) {
+            fetch(`/filter_tasks?search=${search}&filter=${filter}`)
+                .then(response => response.json())
+                .then(data => {
+                    taskContainer.innerHTML = data.html;
+                });
+        }
+        const filterSelect = document.getElementById('filter');
+
+        filterSelect.addEventListener('change', function () {
+            if (filterSelect.value === 'completed') {
+                filterTasks('', 'completed');
+            }
+        });
+
+
+        const sidebar = document.getElementById('sidebarMenu');
+        const mainContent = document.getElementById('mainContent');
+        const toggleButton = document.getElementById('toggleSidebar');
+
+        toggleButton.addEventListener('click', function () {
+            if (sidebar.classList.contains('d-none')) {
+                sidebar.classList.remove('d-none'); 
+                mainContent.classList.remove('col-md-12'); 
+                mainContent.classList.add('col-md-9', 'col-lg-10');
+            } else {
+                sidebar.classList.add('d-none'); 
+                mainContent.classList.remove('col-md-9', 'col-lg-10');
+                mainContent.classList.add('col-md-12'); 
+            }
+        });
+    });
+</script>
+{% endblock content %}

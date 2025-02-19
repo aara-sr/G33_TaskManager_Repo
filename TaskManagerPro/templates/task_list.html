@@ -1,0 +1,36 @@
+{% for task in tasks %}
+<div class="col-md-4 mb-4">
+    <div class="card h-100">
+        <div class="card-body">
+            <h5 class="card-title text-dark">{{ task.title }}</h5>
+            <p class="card-text text-dark">{{ task.description }}</p>
+            <p class="card-text text-dark">
+                <small>
+                    Priority: 
+                    {% if task.priority == 1 %}
+                        <span class="badge bg-success">Low</span>
+                    {% elif task.priority == 2 %}
+                        <span class="badge bg-warning">Medium</span>
+                    {% else %}
+                        <span class="badge bg-danger">High</span>
+                    {% endif %}
+                </small>
+            </p>
+            <p class="card-text text-dark">
+                <small>Due Date: {{ task.due_date.strftime('%Y-%m-%d') if task.due_date else 'Not set' }}</small>
+            </p>
+            <p class="card-text text-dark">
+                <small>Status: {{ 'Completed' if task.completed else 'Incomplete' }}</small>
+            </p>
+            <div class="mt-3">
+                <a href="{{ url_for('update_task', task_id=task.id) }}" class="btn btn-primary btn-sm">Update</a>
+                <a href="{{ url_for('delete_task', task_id=task.id) }}" class="btn btn-danger btn-sm" onclick="return confirm('Are You Sure To Delete Task!!')">Delete</a>
+                {% if not task.completed %}
+                    <a href="{{ url_for('complete_task', task_id=task.id) }}" class="btn btn-success btn-sm">Mark Complete</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
