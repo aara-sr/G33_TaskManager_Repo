@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-6">
+            <h1 class="display-4">Welcome to TaskMaster Pro</h1>
+            <p class="lead">Boost your productivity with our powerful task management tool.</p>
+            <div class="mt-4">
+                <a href="{% url 'login' %}" class="btn btn-primary btn-lg me-2">Login</a>
+                <a href="{% url 'register' %}" class="btn btn-outline-primary btn-lg">Register</a>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <img src="{% static 'images/task.jpg' %}" alt="Task Management" class="img-fluid rounded" width="500px">
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-md-12">
+            <h2>Features</h2>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-body text-body">
+                            <h5 class="card-title"><i class="fas fa-tasks me-2"></i>Task Organization</h5>
+                            <p class="card-text">Easily create, update, and delete tasks to stay organized.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-body text-body">
+                            <h5 class="card-title"><i class="fas fa-calendar-alt me-2 text-body"></i>Due Dates</h5>
+                            <p class="card-text text-body">Set due dates for your tasks and never miss a deadline.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-body text-body">
+                            <h5 class="card-title"><i class="fas fa-filter me-2 text-body"></i>Priority Filters</h5>
+                            <p class="card-text text-body">Assign priorities to tasks and filter them accordingly.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-md-12 ">
+            <h2>Customer Reviews</h2>
+            <div id="reviewCarousel" class="carousel slide text-dark" data-bs-ride="carousel" data-bs-interval="5000">
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <div class="card">
+                            <div class="card-body">
+                                <p class="card-text">"TaskMaster Pro has revolutionized the way I manage my tasks. It's intuitive and feature-rich!"</p>
+                                <p class="card-text"><small>- John Doe, Entrepreneur</small></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <div class="card">
+                            <div class="card-body">
+                                <p class="card-text">"I love how easy it is to prioritize and track my tasks. This app has boosted my productivity significantly."</p>
+                                <p class="card-text"><small>- Jane Smith, Project Manager</small></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock content %}
+

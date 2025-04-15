@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block content %}
+
+{% if messages %}
+<div class="container mt-3">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} bg-body text-body shadow-sm border-0" role="alert">
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+
+            <div class="card shadow-lg rounded bg-body text-body">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">My Profile</h4>
+                </div>
+
+                <div class="card-body">
+
+                    <div class="mb-4">
+                        <h5 class="text-secondary">Username:</h5>
+                        <p class="fs-5 text-body">{{ request.user.username }}</p>
+
+                        <h5 class="text-secondary">Email:</h5>
+                        <p class="fs-5 text-body">{{ request.user.email }}</p>
+                    </div>
+
+                    <div class="d-flex justify-content-between flex-wrap gap-3">
+                        <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#updateProfileModal">
+                            <i class="bi bi-pencil-square me-1"></i> Update Profile
+                        </button>
+
+                        <button class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                            <i class="bi bi-key me-1"></i> Change Password
+                        </button>
+
+                        <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
+                            <i class="bi bi-trash me-1"></i> Delete Account
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="updateProfileModal" tabindex="-1" aria-labelledby="updateProfileModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form method="POST" class="modal-content bg-body text-body">
+            {% csrf_token %}
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateProfileModalLabel">Update Profile</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {% for field in form %}
+                <div class="mb-3">
+                    {{ field.label_tag }}
+                    {% render_field field class="form-control text-body bg-transparent" %}
+                    {% if field.errors %}
+                    <div class="invalid-feedback d-block text-danger">{{ field.errors|join:", " }}</div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form method="POST" action="{% url 'change_password' %}" class="modal-content bg-body text-body">
+            {% csrf_token %}
+            <div class="modal-header">
+                <h5 class="modal-title" id="changePasswordModalLabel">Change Password</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {% for field in password_form %}
+                <div class="mb-3">
+                    {{ field.label_tag }}
+                    {% render_field field class="form-control text-body bg-transparent" %}
+                    {% if field.errors %}
+                    <div class="invalid-feedback d-block text-danger">{{ field.errors|join:", " }}</div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-warning">Update Password</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form method="POST" action="{% url 'delete_account' %}" class="modal-content bg-body text-body">
+            {% csrf_token %}
+            <div class="modal-header">
+                <h5 class="modal-title text-danger" id="deleteAccountModalLabel">Delete Account</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-danger">Are you sure you want to delete your account? This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-danger">Yes, Delete My Account</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

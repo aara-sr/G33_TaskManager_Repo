@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card p-5 shadow-lg rounded">
+            <h1 class="text-center mb-4 text-body">Welcome, User!</h1>
+            <p class="text-center mb-4 text-body">Sign in to continue.</p>
+
+            <form id="signin-form" method="POST" class="needs-validation" novalidate>
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    {{ form.username.label_tag }}
+                    {% render_field form.username class="form-control" placeholder="Enter email or username" %}
+                    {% for error in form.username.errors %}
+                        <div class="invalid-feedback d-block">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+
+                <div class="mb-3 position-relative text-body">
+                    {{ form.password.label_tag }}
+                    <div class="input-group">
+                        {% render_field form.password class="form-control" id="login_password" placeholder="Enter your password" %}
+                        <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('login_password', 'toggleIcon')">
+                            <i class="bi bi-eye-slash" id="toggleIcon"></i>
+                        </button>
+                    </div>
+                    {% for error in form.password.errors %}
+                        <div class="invalid-feedback d-block">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                {% if form.remember %}
+                <div class="form-check mb-3 text-body">
+                    {% render_field form.remember class="form-check-input" %}
+                    {{ form.remember.label_tag }}
+                </div>
+                {% endif %}
+
+                <button type="submit" class="btn btn-primary w-100">Login</button>
+
+                <div class="text-center mt-3">
+                    <a href="#" class="text-body">Forgot Password?</a>
+                </div>
+
+                <p class="text-center mt-3 text-body">
+                    Don't have an account? <a href="{% url 'register' %}" class="fw-bold">Sign Up</a>
+                </p>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function togglePassword(inputId, iconId) {
+    const passwordField = document.getElementById(inputId);
+    const toggleIcon = document.getElementById(iconId);
+
+    if (passwordField.type === "password") {
+        passwordField.type = "text";
+        toggleIcon.classList.remove("bi-eye-slash");
+        toggleIcon.classList.add("bi-eye");
+    } else {
+        passwordField.type = "password";
+        toggleIcon.classList.remove("bi-eye");
+        toggleIcon.classList.add("bi-eye-slash");
+    }
+}
+</script>
+
+{% endblock %}

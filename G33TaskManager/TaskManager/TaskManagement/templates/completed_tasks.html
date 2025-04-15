@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4 text-body">Completed Tasks</h2>
+
+    {% if completed_tasks %}
+        <div class="row">
+            {% for task in completed_tasks %}
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title text-body">{{ task.title }}</h5>
+                            <p class="card-text text-body">{{ task.description }}</p>
+                            <p class="card-text">
+                                <small class="text-body">Completed on: {{ task.updated_at|date:"Y-m-d H:i" }}</small>
+                            </p>
+                            <span class="badge bg-success">Completed</span>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-center text-body">No completed tasks yet.</p>
+    {% endif %}
+</div>
+
+{% endblock %}
