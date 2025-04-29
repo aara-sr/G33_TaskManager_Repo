@@ -1,0 +1,245 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container-fluid">
+    <div class="row">
+        <div id="sidebarColumn" class="col-md-3 col-lg-2 p-0 bg-body border-end">
+            <nav class="h-100 position-sticky pt-3">
+                <ul class="nav flex-column">
+                    <li class="nav-item"><a class="nav-link active" href="{% url 'dashboard' %}"><i
+                                class="fas fa-home me-2"></i>Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'upcoming_tasks' %}"><i
+                                class="fas fa-calendar me-2"></i>Upcoming Tasks</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'completed_tasks' %}" onclick="filterTasks('', 'completed')"><i
+                                class="fas fa-check-circle me-2"></i>Completed Tasks</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="filterToggle">
+                            <i class="fas fa-filter me-2"></i>Filters
+                        </a>
+                    </li>
+
+                    <div id="filterDropdownContainer" style="display: none; padding: 10px;">
+                        <select id="topFilterDropdown" class="form-select">
+                            <option value="">All Tasks</option>
+                            <option value="priority_high">High Priority</option>
+                            <option value="priority_medium">Medium Priority</option>
+                            <option value="priority_low">Low Priority</option>
+                            <option value="completed">Completed</option>
+                            <option value="incomplete">Incomplete</option>
+                        </select>
+                    </div>
+
+                    <li class="nav-item"><a class="nav-link" href="#"><i class="fas fa-tags me-2"></i>Labels</a></li>
+                    <li class="nav-item"><a href="{% url 'authorize_google' %}"
+                            class="nav-link">
+                            <i class="fas fa-plug me-1"></i> Connect Google Calendar
+                        </a></li>
+                    <li class="nav-item"> <a href="{% url 'calendar_sync' %}" class="nav-link">
+                            <i class="fas fa-sync me-1"></i> Sync Calendar
+                        </a></li>
+
+                    {% if request.user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'logout' %}">
+                            <img src="{% static 'images/logout.png' %}"
+                                alt="Logout" height="20px" style="background-color: white; border-radius: 50%;">
+                            Logout</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+
+        <main id="mainContent" class="col-md-9 col-lg-10 px-md-4" style="min-height: 80vh;">
+            <div class="d-flex justify-content-between flex-wrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Upcoming Tasks</h1>
+
+                <div class="d-flex gap-2">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search tasks..." id="searchInput">
+                        <button class="btn btn-outline-secondary" type="button" id="searchButton">Search</button>
+                        <select id="filterDropdown" class="form-select">
+                            <option value="">All Tasks</option>
+                            <option value="priority_high">High Priority</option>
+                            <option value="priority_medium">Medium Priority</option>
+                            <option value="priority_low">Low Priority</option>
+                            <option value="completed">Completed</option>
+                            <option value="incomplete">Incomplete</option>
+                        </select>
+                    </div>
+
+                    <button id="toggleSidebar" class="btn btn-outline-primary">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="container mt-4" id="taskContainer">
+                <!-- Today Section -->
+                 
+                <h4>Today</h4>
+                {% if today_tasks %}
+                <div class="row">
+                    {% include 'task_list.html' with tasks=today_tasks %}
+                </div>
+                {% else %}
+                <p>No tasks for today.</p>
+                {% endif %}
+
+                <!-- This Week Section -->
+                <h4 class="mt-5">This Week</h4>
+                {% if week_tasks %}
+                <div class="scroll-wrapper position-relative">
+                    <div class="scroll-arrow left-arrow">&#10094;</div>
+                    <div class="scroll-arrow right-arrow">&#10095;</div>
+                    <div class="scrollable d-flex overflow-auto px-2">
+                        {% include 'task_list.html' with tasks=week_tasks %}
+                    </div>
+                </div>
+                {% else %}
+                <p>No tasks for this week.</p>
+                {% endif %}
+
+                <!-- This Month Section -->
+                <h4 class="mt-5">This Month</h4>
+                {% if month_tasks %}
+                <div class="scroll-wrapper position-relative">
+                    <div class="scroll-arrow left-arrow">&#10094;</div>
+                    <div class="scroll-arrow right-arrow">&#10095;</div>
+                    <div class="scrollable d-flex overflow-auto px-2">
+                        {% include 'task_list.html' with tasks=month_tasks %}
+                    </div>
+                </div>
+                {% else %}
+                <p>No tasks for this month.</p>
+                {% endif %}
+
+                <!-- next month  -->
+                <h4 class="mt-5">Next Month</h4>
+                {% if next_month_tasks %}
+                <div class="scroll-wrapper position-relative">
+                    <div class="scroll-arrow left-arrow">&#10094;</div>
+                    <div class="scroll-arrow right-arrow">&#10095;</div>
+                    <div class="scrollable d-flex overflow-auto px-2">
+                        {% include 'task_list.html' with tasks=next_month_tasks %}
+                    </div>
+                </div>
+                {% else %}
+                <p>No tasks for next month.</p>
+                {% endif %}
+            </div>
+        </main>
+    </div>
+</div>
+<style>
+    .scrollable {
+        scroll-behavior: smooth;
+        gap: 1rem;
+    }
+
+    .scroll-wrapper {
+        position: relative;
+    }
+
+    .scroll-arrow {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+        padding: 0.5rem;
+        border-radius: 50%;
+        cursor: pointer;
+        display: none;
+        z-index: 10;
+    }
+
+    .scroll-wrapper:hover .scroll-arrow {
+        display: block;
+    }
+
+    .left-arrow {
+        left: 0;
+    }
+
+    .right-arrow {
+        right: 0;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Scroll buttons
+        document.querySelectorAll('.scroll-wrapper').forEach(wrapper => {
+            const scrollable = wrapper.querySelector('.scrollable');
+            wrapper.querySelector('.left-arrow').addEventListener('click', () => {
+                scrollable.scrollBy({ left: -300, behavior: 'smooth' });
+            });
+            wrapper.querySelector('.right-arrow').addEventListener('click', () => {
+                scrollable.scrollBy({ left: 300, behavior: 'smooth' });
+            });
+        });
+
+        // Sidebar toggle
+        const sidebar = document.getElementById('sidebarColumn');
+        const mainContent = document.getElementById('mainContent');
+        const toggleBtn = document.getElementById('toggleSidebar');
+
+        toggleBtn.addEventListener('click', function () {
+            if (sidebar.classList.contains('d-none')) {
+                sidebar.classList.remove('d-none');
+                mainContent.classList.remove('col-md-12');
+                mainContent.classList.add('col-md-9', 'col-lg-10');
+            } else {
+                sidebar.classList.add('d-none');
+                mainContent.classList.remove('col-md-9', 'col-lg-10');
+                mainContent.classList.add('col-md-12');
+            }
+        });
+
+        // Search & filter logic
+        const searchInput = document.getElementById('searchInput');
+        const searchButton = document.getElementById('searchButton');
+        const filterDropdown = document.getElementById('filterDropdown');
+        const taskContainer = document.getElementById('taskContainer');
+
+        function filterTasks(search, filter) {
+            taskContainer.innerHTML = '<p>Loading...</p>';
+            fetch(`/filter_tasks?search=${encodeURIComponent(search)}&filter=${encodeURIComponent(filter)}`)
+                .then(response => response.json())
+                .then(data => {
+                    taskContainer.innerHTML = data.html;
+                })
+                .catch(error => {
+                    console.error('Error fetching tasks:', error);
+                    taskContainer.innerHTML = '<p>Failed to load tasks.</p>';
+                });
+        }
+
+        // Button click
+        searchButton.addEventListener('click', function () {
+            const searchQuery = searchInput.value;
+            const filterValue = filterDropdown.value;
+            filterTasks(searchQuery, filterValue);
+        });
+
+        // Enter key
+        searchInput.addEventListener('keyup', function (e) {
+            if (e.key === 'Enter') {
+                const searchQuery = searchInput.value;
+                const filterValue = filterDropdown.value;
+                filterTasks(searchQuery, filterValue);
+            }
+        });
+
+        // Dropdown filter
+        filterDropdown.addEventListener('change', function () {
+            const searchQuery = searchInput.value;
+            const filterValue = filterDropdown.value;
+            filterTasks(searchQuery, filterValue);
+        });
+    });
+</script>
+
+{% endblock %}

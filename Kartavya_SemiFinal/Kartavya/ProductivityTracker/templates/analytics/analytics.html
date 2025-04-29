@@ -1,0 +1,102 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Task Analytics</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<h1>Task Analytics</h1>
+
+<canvas id="completionChart" width="400" height="400"></canvas>
+<canvas id="priorityChart" width="400" height="400"></canvas>
+<canvas id="timeChart" width="600" height="400"></canvas>
+
+<script>
+    var completedCount = {{ completed_count|json }};
+    var incompleteCount = {{ incomplete_count|json }};
+    var highPriority = {{ high_priority_count|json }};
+    var mediumPriority = {{ medium_priority_count|json }};
+    var lowPriority = {{ low_priority_count|json }};
+    var dates = {{ dates|json }};
+    var completedPerDay = {{ completed_per_day|json }};
+
+// === Pie Chart: Completion ===
+new Chart(document.getElementById('completionChart'), {
+    type: 'pie',
+    data: {
+        labels: ['Completed', 'Incomplete'],
+        datasets: [{
+            data: [completedCount, incompleteCount],
+            backgroundColor: ['#4caf50', '#f44336']
+        }]
+    },
+    options: {
+        plugins: {
+            title: {
+                display: true,
+                text: 'Task Completion Status'
+            }
+        }
+    }
+});
+
+// === Bar Chart: Priority ===
+new Chart(document.getElementById('priorityChart'), {
+    type: 'bar',
+    data: {
+        labels: ['High', 'Medium', 'Low'],
+        datasets: [{
+            label: 'Task Count',
+            data: [highPriority, mediumPriority, lowPriority],
+            backgroundColor: ['#e53935', '#fb8c00', '#43a047']
+        }]
+    },
+    options: {
+        scales: {
+            y: { beginAtZero: true, precision: 0 }
+        },
+        plugins: {
+            title: {
+                display: true,
+                text: 'Tasks by Priority'
+            },
+            legend: { display: false }
+        }
+    }
+});
+
+// === Line Chart: Time ===
+new Chart(document.getElementById('timeChart'), {
+    type: 'line',
+    data: {
+        labels: dates,
+        datasets: [{
+            label: 'Tasks Completed',
+            data: completedPerDay,
+            borderColor: '#1e88e5',
+            backgroundColor: 'rgba(30, 136, 229, 0.2)',
+            fill: true,
+            tension: 0.3,
+            pointRadius: 4,
+            pointBackgroundColor: '#1e88e5'
+        }]
+    },
+    options: {
+        scales: {
+            y: { beginAtZero: true, precision: 0 }
+        },
+        plugins: {
+            title: {
+                display: true,
+                text: 'Tasks Completed Over Time'
+            }
+        }
+    }
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,226 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div id="sidebarColumn" class="col-md-3 col-lg-2 p-0 bg-body border-end">
+            <nav class="h-100 position-sticky pt-3">
+                <ul class="nav flex-column">
+                    <li class="nav-item"><a class="nav-link active" href="{% url 'dashboard' %}"><i
+                                class="fas fa-home me-2"></i>Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'upcoming_tasks' %}"><i
+                                class="fas fa-calendar me-2"></i>Upcoming Tasks</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'completed_tasks' %}" onclick="filterTasks('', 'completed')"><i
+                                class="fas fa-check-circle me-2"></i>Completed Tasks</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="filterToggle">
+                            <i class="fas fa-filter me-2"></i>Filters
+                        </a>
+                    </li>
+
+                    <div id="filterDropdownContainer" style="display: none; padding: 10px;">
+                        <select id="topFilterDropdown" class="form-select">
+                            <option value="">All Tasks</option>
+                            <option value="priority_high">High Priority</option>
+                            <option value="priority_medium">Medium Priority</option>
+                            <option value="priority_low">Low Priority</option>
+                            <option value="completed">Completed</option>
+                            <option value="incomplete">Incomplete</option>
+                        </select>
+                    </div>
+
+                    <li class="nav-item"><a class="nav-link" href="#"><i class="fas fa-tags me-2"></i>Labels</a></li>
+                    <li class="nav-item"><a href="{% url 'authorize_google' %}"
+                            class="nav-link">
+                            <i class="fas fa-plug me-1"></i> Connect Google Calendar
+                        </a></li>
+                    <li class="nav-item"> <a href="{% url 'calendar_sync' %}" class="nav-link">
+                            <i class="fas fa-sync me-1"></i> Sync Calendar
+                        </a></li>
+
+                    {% if request.user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'logout' %}"><img src="{% static 'images/logout.png' %}"
+                                alt="Logout" height="20px" style="background-color: white; border-radius: 50%;">
+                            Logout</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+
+        <main id="mainContent" class="col-md-9 col-lg-10 px-md-4" style="min-height: 80vh;">
+            <div class="d-flex justify-content-between flex-wrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Dashboard</h1>
+
+                <div class="d-flex gap-2">
+                    <div class="input-group text-body">
+                        <input type="text" class="form-control" placeholder="Search tasks..." id="searchInput">
+                        <button class="btn btn-outline-primary rounded-end-2" type="button"
+                            id="searchButton">Search</button>
+                        <select id="filterDropdown" class="form-select">
+                            <option value="">All Tasks</option>
+                            <option value="priority_high">High Priority</option>
+                            <option value="priority_medium">Medium Priority</option>
+                            <option value="priority_low">Low Priority</option>
+                            <option value="completed">Completed</option>
+                            <option value="incomplete">Incomplete</option>
+                        </select>
+
+
+                        <button id="toggleSidebar" class="btn btn-outline-primary">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="d-flex justify-content-center w-100">
+                    <div class="card bg-body border rounded shadow"
+                        style="min-width: 300px; max-width: 600px; width: 100%;">
+                        <div class="card-body text-body">
+                            <h5 class="card-title text-center">Add New Task</h5>
+                            <form method="POST" action="{% url 'add_task' %}">
+                                {% csrf_token %}
+                                {{ task_form.as_p }}
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-primary">Add Task</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2>Your Tasks</h2>
+            <div class="row" id="taskContainer">
+                {% for task in tasks %}
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 bg-body border shadow-sm">
+                        <div class="card-body text-body">
+                            <h5 class="card-title">{{ task.title }}</h5>
+                            <p class="card-text">{{ task.description }}</p>
+                            <p class="card-text">
+                                <small>
+                                    Priority:
+                                    {% if task.priority == 1 %}
+                                    <span class="badge bg-success">Low</span>
+                                    {% elif task.priority == 2 %}
+                                    <span class="badge bg-warning">Medium</span>
+                                    {% elif task.priority == 3 %}
+                                    <span class="badge bg-danger">High</span>
+                                    {% endif %}
+                                </small>
+                            </p>
+                            <p class="card-text"><small>Due Date: {{ task.due_date|date:"Y-m-d" }}</small></p>
+                            <p class="card-text text-body">
+                                <small>Status:
+                                    {% if task.completed %}
+                                    <span class="text-success">Completed</span>
+                                    {% else %}
+                                    <span class="text-danger">Incomplete</span>
+                                    {% endif %}
+                                </small>
+                            </p>
+
+                            <div class="mt-3">
+                                {% if not task.completed %}
+                                <a href="{% url 'update_task' task.id %}" class="btn btn-primary btn-sm">Update</a>
+                                <a href="{% url 'complete_task' task.id %}" class="btn btn-success btn-sm">Mark
+                                    Complete</a>
+                                {% endif %}
+                                <a href="{% url 'delete_task' task.id %}" class="btn btn-danger btn-sm">Delete</a>
+                                {% if request.session.credentials %}
+                                <a href="{% url 'export_task_to_calendar' task.id %}" class="btn btn-outline-info btn-sm">
+                                    <i class="fas fa-cloud-upload-alt me-1"></i> Export to Calendar
+                                </a>
+                                
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <div class="text-secondary text-body">
+                        No tasks found.
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <p></p>
+        </main>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const sidebar = document.getElementById('sidebarColumn');
+        const mainContent = document.getElementById('mainContent');
+        const toggleBtn = document.getElementById('toggleSidebar');
+
+        toggleBtn.addEventListener('click', function () {
+            if (sidebar.classList.contains('d-none')) {
+                sidebar.classList.remove('d-none');
+                mainContent.classList.remove('col-md-12');
+                mainContent.classList.add('col-md-9', 'col-lg-10');
+            } else {
+                sidebar.classList.add('d-none');
+                mainContent.classList.remove('col-md-9', 'col-lg-10');
+                mainContent.classList.add('col-md-12');
+            }
+        });
+
+        const searchInput = document.getElementById('searchInput');
+        const searchButton = document.getElementById('searchButton');
+        const taskContainer = document.getElementById('taskContainer');
+        const filterSelect = document.getElementById('filterDropdown');
+
+
+
+        searchButton.addEventListener('click', function () {
+            const searchQuery = searchInput.value;
+            filterTasks(searchQuery, '');
+        });
+
+        searchInput.addEventListener('keyup', function (e) {
+            if (e.key === 'Enter') {
+                filterTasks(searchInput.value, '');
+            }
+        });
+
+
+        const filterUrl = "{% url 'filter_tasks' %}";
+
+        function filterTasks(search, filter) {
+            fetch(`${filterUrl}?search=${search}&filter=${filter}`)
+                .then(response => response.json())
+                .then(data => {
+                    taskContainer.innerHTML = data.html;
+                });
+        }
+
+        document.querySelectorAll('#filterDropdown, #topFilterDropdown').forEach(dropdown => {
+            dropdown.addEventListener('change', function () {
+                const filterValue = this.value;
+                filterTasks('', filterValue);
+            });
+        });
+
+
+        const filterToggle = document.getElementById("filterToggle");
+        const filterContainer = document.getElementById("filterDropdownContainer");
+
+        filterToggle.addEventListener("click", function (e) {
+            e.preventDefault();  // Prevent link from navigating
+            if (filterContainer.style.display === "none") {
+                filterContainer.style.display = "block";
+            } else {
+                filterContainer.style.display = "none";
+            }
+        });
+
+    });
+</script>
+{% endblock content %}
