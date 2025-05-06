@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% block content %}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 text-body">
+            <h2 class="mb-4">Register</h2>
+            <form method="POST" action="">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    {{ form.username.label_tag }}
+                    {% render_field form.username class="form-control" %}
+                    {% for error in form.username.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.email.label_tag }}
+                    {% render_field form.email class="form-control" %}
+                    {% for error in form.email.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.age.label_tag }}
+                    {% render_field form.age class="form-control" %}
+                    {% for error in form.age.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.gender.label_tag }}
+                    {% render_field form.gender class="form-control" %}
+                    {% for error in form.gender.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.mobile.label_tag }}
+                    {% render_field form.mobile class="form-control" %}
+                    {% for error in form.mobile.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-3 position-relative">
+                    {{ form.password1.label_tag }}
+                    <div class="input-group">
+                        {% render_field form.password1 class="form-control" id="password" %}
+                        <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('password', 'toggleIcon')">
+                            <i class="bi bi-eye-slash" id="toggleIcon"></i>
+                        </button>
+                    </div>
+                    {% for error in form.password1.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-3 position-relative">
+                    {{ form.password2.label_tag }}
+                    <div class="input-group">
+                        {% render_field form.password2 class="form-control" id="confirm_password" %}
+                        <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('confirm_password', 'toggleIconConfirm')">
+                            <i class="bi bi-eye-slash" id="toggleIconConfirm"></i>
+                        </button>
+                    </div>
+                    {% for error in form.password2.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">Register</button>
+            </form>
+
+            <p class="text-center mt-3 text-body">
+                Already have an account? <a href="{% url 'login' %}" class="fw-bold">Sign In</a>
+            </p> 
+        </div>
+    </div>
+</div>
+
+<script>
+function togglePassword(inputId, iconId) {
+    const passwordField = document.getElementById(inputId);
+    const toggleIcon = document.getElementById(iconId);
+
+    if (passwordField.type === "password") {
+        passwordField.type = "text";
+        toggleIcon.classList.remove("bi-eye-slash");
+        toggleIcon.classList.add("bi-eye");
+    } else {
+        passwordField.type = "password";
+        toggleIcon.classList.remove("bi-eye");
+        toggleIcon.classList.add("bi-eye-slash");
+    }
+}
+</script>
+
+{% endblock %}

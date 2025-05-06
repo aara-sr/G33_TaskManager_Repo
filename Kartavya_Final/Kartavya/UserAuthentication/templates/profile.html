@@ -1,0 +1,208 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block content %}
+{% if messages %}
+<div class="container mt-3">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} bg-body text-body shadow-sm border-0" role="alert">
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="container-fluid mt-4">
+    <div class="row justify-content-center">
+        <!-- Profile Info Card -->
+        <div class="col-md-6 px-4">
+            <div class="card shadow-lg h-80vh">
+                <div class="card-header bg-primary text-body">
+                    <h4 class="mb-0">Profile Information</h4>
+                </div>
+                <div class="card-body d-flex flex-column text-body">
+                    <div class="text-center mb-4">
+                        <div class="position-relative d-inline-block">
+                            {% if profile.profile_picture %}
+                                <img src="{{ profile.profile_picture.url }}" alt="Profile Picture" class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
+                            {% else %}
+                                <img src="{% static 'images/default-profile.png' %}" alt="Default Profile" class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
+                            {% endif %}
+                            <form id="profilePictureForm" method="POST" enctype="multipart/form-data" class="position-absolute bottom-0 end-0">
+                                {% csrf_token %}
+                                <label for="profile_picture" class="btn btn-sm btn-primary rounded-circle" style="width: 32px; height: 32px;">
+                                    <i class="bi bi-camera-fill"></i>
+                                </label>
+                                <input type="file" id="profile_picture" name="profile_picture" class="d-none" onchange="this.form.submit()">
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <div class="info-section text-body">
+                        <h3 class="text-center mb-4" id="display-username">{{ request.user.username }}</h3>
+                        <div class="mb-3">
+                            <label class="text-muted text-body">Email:</label>
+                            <p class="fs-5" id="display-email">{{ request.user.email }}</p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="text-muted text-body">Age:</label>
+                            <p class="fs-5" id="display-age">{{ profile.age|default:"Not set" }}</p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="text-muted text-body">Gender:</label>
+                            <p class="fs-5" id="display-gender">{{ profile.get_gender_display|default:"Not set" }}</p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="text-muted text-body">Mobile Number:</label>
+                            <p class="fs-5" id="display-mobile">{{ profile.mobile_number|default:"Not set" }}</p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="text-muted text-body">Task Statistics:</label>
+                            <div class="row text-center">
+                                <div class="col-6">
+                                    <h5>Total Tasks</h5>
+                                    <p class="fs-4">{{ task_stats.total_tasks }}</p>
+                                </div>
+                                <div class="col-6">
+                                    <h5>Completed</h5>
+                                    <p class="fs-4">{{ task_stats.completed_tasks }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-auto">
+                        <button class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
+                            <i class="bi bi-trash me-2"></i>Delete Account
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Profile Card -->
+        <div class="col-md-6 px-4">
+            <div class="card shadow-lg h-80vh">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Edit Profile</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" id="updateProfileForm" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="id_username" class="form-label">Username</label>
+                            {% render_field form.username class="form-control" data-field="username" %}
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_email" class="form-label">Email</label>
+                            {% render_field form.email class="form-control" data-field="email" %}
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_age" class="form-label">Age</label>
+                            {% render_field form.age class="form-control" data-field="age" %}
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_gender" class="form-label">Gender</label>
+                            {% render_field form.gender class="form-control" data-field="gender" %}
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_mobile_number" class="form-label">Mobile Number</label>
+                            {% render_field form.mobile_number class="form-control" data-field="mobile" %}
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle me-2"></i>Save Changes
+                            </button>
+                            <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                                <i class="bi bi-key me-2"></i>Change Password
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Change Password Modal -->
+<div class="modal fade" id="changePasswordModal" tabindex="-1">
+    <div class="modal-dialog">
+        <form method="POST" action="{% url 'change_password' %}" class="modal-content bg-body text-body">
+            {% csrf_token %}
+            <div class="modal-header">
+                <h5 class="modal-title">Change Password</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                {% for field in password_form %}
+                <div class="mb-3">
+                    {{ field.label_tag }}
+                    {% render_field field class="form-control" %}
+                    {% if field.errors %}
+                    <div class="invalid-feedback d-block">{{ field.errors|join:", " }}</div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-warning">Update Password</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Delete Account Modal -->
+<div class="modal fade" id="deleteAccountModal" tabindex="-1">
+    <div class="modal-dialog">
+        <form method="POST" action="{% url 'delete_account' %}" class="modal-content bg-body text-body">
+            {% csrf_token %}
+            <div class="modal-header">
+                <h5 class="modal-title text-danger">Delete Account</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-danger">Are you sure you want to delete your account? This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-danger">Yes, Delete My Account</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Set initial height
+    const setCardHeight = () => {
+        const cards = document.querySelectorAll('.h-80vh');
+        cards.forEach(card => {
+            card.style.height = '80vh';
+            card.style.overflowY = 'auto';
+        });
+    };
+
+    setCardHeight();
+    window.addEventListener('resize', setCardHeight);
+
+    // Set up input change handlers
+    const inputs = document.querySelectorAll('[data-field]');
+    inputs.forEach(input => {
+        input.addEventListener('input', function() {
+            const field = this.dataset.field;
+            const displayElement = document.getElementById(`display-${field}`);
+            if (displayElement) {
+                let value = this.value;
+                if (field === 'gender' && this.tagName === 'SELECT') {
+                    value = this.options[this.selectedIndex].text;
+                }
+                displayElement.textContent = value || 'Not set';
+            }
+        });
+    });
+});
+</script>
+{% endblock %}
