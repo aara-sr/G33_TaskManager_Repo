@@ -1,34 +1,48 @@
-# G33_TaskManager_Repo
-Web Development Project for G33 Sem 2.
+G33_TaskManager_Repo
 
-
+📌 Web Development Project – G33 Semester 2
+This repository contains the complete development journey of our task management platform, Kartavya, including submissions for all continuous evaluations:
 
 Continuous Evaluation 1: TaskManagerPro
 
 Continuous Evaluation 2: G33TaskManager
 
-Continuous Evaluation 3 aka Final Evaluation: Kartavya_Final
+Continuous Evaluation 3 (Final Evaluation): Kartavya_Final
 
+👥 Team Members
+Team Lead: Aaradhya Srivastava
+Members:
 
+Harshit
 
-Team of 4 members:
-Lead by Aaradhya Srivastava (Me)
-> Harshit,
-> 
-> Divyansh Goel, and
-> 
-> Mukul Singla
+Divyansh Goel
 
+Mukul Singla
 
+📖 Introduction
+Managing responsibilities—whether in college, at work, or in daily life—can often become overwhelming without the right tools. We've all experienced times when tasks slip through the cracks or team coordination falters simply due to the absence of a clear system.
 
+This common problem inspired us to create Kartavya—a task management platform designed to bring structure, clarity, and accountability to everyday workflows.
 
-INTRODUCTION:
+The name Kartavya, which means “duty” or “responsibility” in Hindi, reflects the core philosophy behind our platform: taking ownership of our roles and collaborating effectively. Whether you're a student juggling assignments or part of a project team, Kartavya helps you keep track of what needs to be done—and who is doing it.
 
+🎯 Key Objectives
+Encourage a responsible and team-oriented mindset
 
-Managing responsibilities—whether in college, work, or daily life—can often become overwhelming without the right tools. We've all experienced moments where tasks slip through the cracks or team coordination breaks down simply because there isn’t a clear system in place. This common problem inspired us to create Kartavya—a task management platform built to bring structure, clarity, and accountability to everyday work.
+Provide a simple, accessible, and intuitive task management solution
 
-The name Kartavya, which means “duty” or “responsibility” in Hindi, reflects what we believe in: taking ownership of our roles and working together effectively. Our aim was to design something that doesn’t just help users stay organized but also encourages a mindset of commitment and teamwork. Whether you're a student managing assignments or part of a team working on a group project, Kartavya helps you keep track of what needs to be done—and who’s doing it.
+Build a tool that anyone can use without needing complex training
 
-From the start, we wanted Kartavya to be simple, accessible, and useful. That’s why we included features like a clean calendar view, task tracking, role-based access, and an intuitive user experience. It’s built in a way that anyone can use it without needing to learn complicated tools or systems.
+🔧 Core Features
+🗓️ Clean and interactive calendar view
 
-This project has been a collaborative journey for our team—Mukul, Harshit, Divyansh and me. Each of us contributed in our own way, sharing ideas, solving problems, and learning a lot along the way. Kartavya is more than just a software tool; it’s a reflection of our shared belief in the power of responsibility, and in the value of working together.
+✅ Task tracking with status updates
+
+👥 Role-based access for different user levels
+
+💡 User-friendly and intuitive UI/UX design
+
+🤝 Team Collaboration
+This project has been a collaborative journey. From brainstorming ideas to debugging features, each team member—Mukul, Harshit, Divyansh, and Aaradhya—played a crucial role. Kartavya stands not just as a working product, but as a reflection of our shared values: responsibility, teamwork, and continuous learning.
+
+Feel free to clone, fork, or contribute to this repository!
