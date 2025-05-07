@@ -7,8 +7,8 @@ Continuous Evaluation 3 aka Final Evaluation: Kartavya_Final
 
 Team of 4 members:
 Lead by Aaradhya Srivastava (Me)
-> Harshit
-> Divyansh Goel
+> Harshit,
+> Divyansh Goel, and
 > Mukul Singla
 
 
